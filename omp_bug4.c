@@ -12,6 +12,8 @@
 
 int main (int argc, char *argv[]) 
 {
+setenv("KMP_STACKSIZE", "20M", 1);
+  
 int nthreads, tid, i, j;
 double a[N][N];
 
