@@ -7,7 +7,7 @@ double norm(int N, double *v);
 
 double *jacobi(int *M, double *eps, int N, double *u, double h);
 
-int main (int argc, char **argv) /* the program takes as input the number of grid points N, the method to use (0 for Jacobi, 1 for Gauss-Seidel) and the maximum number of iterations M */
+int main (int argc, char **argv) /* the program takes as input the number of grid points N and the maximum number of iterations M */
 {
 	int i, N, *M, met;
 	double *f, *u, h0, h, *eps, elapsed;
@@ -18,36 +18,25 @@ int main (int argc, char **argv) /* the program takes as input the number of gri
     	abort();
   	}
 
-	N = atol(argv[1]);
-	if (met != 0 && met != 1) {
-    	fprintf(stderr, "Method not available!\n");
-    	abort();
-  	}
-	h0 = N+1;
+	N = atol(argv[1])+2;
+	h0 = N-1;
 	h = (h0*h0);
 	M = (int *) malloc(sizeof(int));
-	if (argc == 4) {
-		*M = atol(argv[3]);
+	if (argc == 3) {
+		*M = atol(argv[2]);
 	} else {
 		*M = 1000; 
 	}	
 	eps = (double *) malloc(sizeof(double));	
 	*eps = 0.0001;	
 	
-	u = (double *) calloc(N, sizeof(double));	
+	u = (double *) calloc(N*N, sizeof(double));	
 	
 	get_timestamp(&time1);
-	if (met == 0) {
-		jacobi(M, eps, N, u, h);		
-		get_timestamp(&time2);
-		elapsed = timestamp_diff_in_seconds(time1,time2);
-		printf("\nJacobi method for %d grid points used %d iteration to reduce the initial error by a factor of %f.\n\n", N, *M, *eps);
-	} else {	
-		gauss_seidel(M, eps, N, u, h);
-		get_timestamp(&time2);
-		elapsed = timestamp_diff_in_seconds(time1,time2);
-		printf("\nGauss-Seidel method for %d grid points used %d iteration to reduce the initial error by a factor of %f.\n\n", N, *M, *eps);	
-	} 
+	jacobi(M, eps, N, u, h);		
+	get_timestamp(&time2);
+	elapsed = timestamp_diff_in_seconds(time1,time2);
+	printf("\nJacobi method for %d grid points used %d iteration to reduce the initial error by a factor of %f.\n\n", N, *M, *eps);
 	printf("Time elapsed is %f seconds.\n\n", elapsed);
 
 	free(M);
@@ -76,63 +65,36 @@ double *jacobi(int *M, double *eps, int N, double *u, double h)
 
 	min_eps = *eps;
 	max_it = *M;
-	norm_b0 = sqrt(N);
+	norm_b0 = N;
+	N2 = (N+2)**2;
 
-	temp_u = (double *) malloc(N*sizeof(double));
-	b = (double *) malloc(N*sizeof(double));
+	temp_u = (double *) malloc(N2*sizeof(double));
+	b = (double *) malloc(N2*sizeof(double));
 
 	while (it < max_it && norm_b > min_eps) {
-		for (j = 0; j < N; j++) {
+		
+		/* stiamo usando N vero, h vero e N2 = (N+2)^2: cambiare in modo che sia cosi */
+
+		for (i = 0; i<N2; i++) 
 			temp_u[j] = u[j];
-		}	
-		u[0] = (1+temp_u[1]*h)/(2*h);	
-		for (j = 1; j < N-1; j++) {
-			u[j] = (1+(temp_u[j-1]+temp_u[j+1])*h)/(2*h);
+		
+		for (i = 1; i < N+1; i++) {
+			for (j = 1; j < N+1; j++)
+				u[N*i+j] = (h**2 - temp_u[N*(i-1)+j] - temp_u[N*(i+1)+j] - temp_u[N*i+j+1] - temp_u[N*i+j-1])/4;
 		}
-		u[N-1] = (1+temp_u[N-2]*h)/(2*h);
-		b[0] = -1 + h*(2*u[0]-u[1]);
+
+		/* b[0] = -1 + h*(2*u[0]-u[1]);
 		for (j = 1; j < N-1; j++) {
 			b[j] = -1 + (-u[j-1]+2*u[j]-u[j+1])*h;
 		}
-		b[N-1] = -1 + h*(2*u[N-1]-u[N-2]);
-		norm_b = norm(N, b);
+		b[N-1] = -1 + h*(2*u[N-1]-u[N-2]); */
+			
+		norm_b = norm(N2, b);
 		norm_b /= norm_b0;
 		it++;
 	}
 
 	free(temp_u);
-	free(b);
-	*eps = norm_b;
-	*M = it;
-}
-
-double *gauss_seidel(int *M, double *eps, int N, double *u, double h) 
-{	
-	int it = 0, max_it, j;
-	double *b, min_eps, norm_b0, norm_b=1;
-
-	min_eps = *eps;
-	max_it = *M;
-	norm_b0 = sqrt(N);
-
-	b = (double *) malloc(N*sizeof(double));
-	
-	while (it < max_it && norm_b > min_eps) { 
-		u[0] = (1+u[1]*h)/(2*h);	
-		for (j = 1; j < N-1; j++) {
-			u[j] = (1+(u[j-1]+u[j+1])*h)/(2*h);
-		}
-		u[N-1] = (1+u[N-2]*h)/(2*h);
-		b[0] = -1 + h*(2*u[0]-u[1]);
-		for (j = 1; j < N-1; j++) {
-			b[j] = -1 + (-u[j-1]+2*u[j]-u[j+1])*h;
-		}
-		b[N-1] = -1 + h*(2*u[N-1]-u[N-2]);
-		norm_b = norm(N, b);
-		norm_b /= norm_b0;
-		it++;
-	}
-
 	free(b);
 	*eps = norm_b;
 	*M = it;
