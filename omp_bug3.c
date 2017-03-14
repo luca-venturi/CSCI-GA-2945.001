@@ -79,7 +79,7 @@ void print_results(float array[N], int tid, int section)
       printf("\n");
       j = 1;
       }
-    }the H
+    }
     printf("\n");
   } /*** end of critical ***/
 
