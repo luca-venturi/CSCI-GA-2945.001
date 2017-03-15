@@ -1,9 +1,7 @@
 /******************************************************************************
-* FILE: omp_bug3.c
-* DESCRIPTION:
-*   Run time error
-* AUTHOR: Blaise Barney  01/09/04
-* LAST REVISED: 06/28/05
+* FILE: omp_fixed3.c
+* DESCRIPTION: The program was getting stuck due to a 'barrier' directive in the function 'print_results'. Once removed, the code works. 
+* AUTHOR: Luca Venturi
 ******************************************************************************/
 #include <omp.h>
 #include <stdio.h>
@@ -59,6 +57,8 @@ for (i=0; i<N; i++)
   printf("Thread %d exiting...\n",tid);
 
   }  /* end of parallel section */
+
+  return 0;
 }
 
 

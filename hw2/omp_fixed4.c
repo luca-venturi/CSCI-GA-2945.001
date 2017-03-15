@@ -1,9 +1,7 @@
 /******************************************************************************
-* FILE: omp_bug4.c
-* DESCRIPTION:
-*   This very simple program causes a segmentation fault.
-* AUTHOR: Blaise Barney  01/09/04
-* LAST REVISED: 04/06/05
+* FILE: omp_fixed4.c
+* DESCRIPTION: The omp_bug4 was not working due to a 'segmentation fault' (memory problem). I solved the problem by allocating the memory dinamically for each thread with 'malloc'.
+* AUTHOR: Luca Venturi
 ******************************************************************************/
 #include <omp.h>
 #include <stdio.h>
@@ -12,15 +10,13 @@
 
 int main (int argc, char *argv[]) 
 {
-setenv("KMP_STACKSIZE", "20M", 1);
   
 int nthreads, tid, i, j;
-double a[N][N];
+double *a;
 
 /* Fork a team of threads with explicit variable scoping */
 #pragma omp parallel shared(nthreads) private(i,j,tid,a)
   {
-
   /* Obtain/print thread info */
   tid = omp_get_thread_num();
   if (tid == 0) 
@@ -31,14 +27,18 @@ double a[N][N];
   printf("Thread %d starting...\n", tid);
 
   /* Each thread works on its own private copy of the array */
+  a = (double *) malloc(N*N*sizeof(double));
   for (i=0; i<N; i++)
     for (j=0; j<N; j++)
-      a[i][j] = tid + i + j;
+      a[i*N+j] = tid + i + j;
 
   /* For confirmation */
-  printf("Thread %d done. Last element= %f\n",tid,a[N-1][N-1]);
+  printf("Thread %d done. Last element= %f\n",tid,a[N*N-1]);
+
+  free(a);
 
   }  /* All threads join master thread and disband */
 
+  return 0;
 }
 
