@@ -20,7 +20,6 @@ int main (int argc, char **argv) /* the program takes as input the number of gri
 
 	N = atol(argv[1]);
 	h = 1/(double)((N+1)*(N+1));
-	printf("%f", h);
 	M = (int *) malloc(sizeof(int));
 	if (argc == 3) {
 		*M = atol(argv[2]);
@@ -68,7 +67,7 @@ void *jacobi(int *M, double *eps, int N, double *u, double h)
 	norm_b0 = N;
 	N2 = (N+2)*(N+2);
 
-	temp_u = (double *) malloc(N2*sizeof(double));
+	temp_u = (double *) calloc(N2, sizeof(double));
 	b = (double *) calloc(N2, sizeof(double));
 
 	while (it < max_it && norm_b > min_eps) {
@@ -76,17 +75,20 @@ void *jacobi(int *M, double *eps, int N, double *u, double h)
 			temp_u[i] = u[i];
 		
 		for (i = 1; i < N+1; i++) {
-			for (j = 1; j < N+1; j++)
-				u[N*i+j] = (h - temp_u[N*(i-1)+j] - temp_u[N*(i+1)+j] - temp_u[N*i+j+1] - temp_u[N*i+j-1])/4;
+			for (j = 1; j < N+1; j++) 
+				u[N*i+j] = (h - temp_u[N*(i-1)+j] - temp_u[N*(i+1)+j] - temp_u[N*i+j+1] - temp_u[N*i+j-1])/4.0;
+			/* for (j = 1; j < N+1; j++) {
+				u[N*i+j] = (h - temp_u[N*(i-1)+j] - temp_u[N*(i+1)+j] - temp_u[N*i+j+1] - temp_u[N*i+j-1])/4.0;
+				printf("%f", u[N*i+j]); } printf("\n"); */
 		}
-
 		for (i = 1; i < N+1; i++) {
 			for (j = 1; j < N+1; j++)
-				b[N*i+j] = 1 + (u[N*(i-1)+j] + u[N*(i+1)+j] + u[N*i+j+1] + u[N*i+j-1] - 4*u[N*i+j])/h;
+				b[N*i+j] = 1.0 + (u[N*(i-1)+j] + u[N*(i+1)+j] + u[N*i+j+1] + u[N*i+j-1] - 4.0*u[N*i+j])/h;
 		}
 			
 		norm_b = norm(N2, b);
 		norm_b /= norm_b0;
+		printf("%f\n", norm_b); /**/
 		it++;
 	}
 
