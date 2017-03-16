@@ -1,7 +1,6 @@
 /******************************************************************************
 * FILE: omp_fixed5.c
-* DESCRIPTION: The problem here was that the second thread tries to get locka before it is released by the first thread, and similarly
-* AUTHOR: Luca Venturi
+* Luca Venturi comment: The problem here was that the second thread tries to get 'locka' before it is released by the first thread, and similarly the first thread tries to get 'lockb' before it is released by the second thread. The bug was solved by releasing the locks in the right position.
 ******************************************************************************/
 #include <omp.h>
 #include <stdio.h>

@@ -1,7 +1,6 @@
 /******************************************************************************
 * FILE: omp_fixed3.c
-* DESCRIPTION: The program was getting stuck due to a 'barrier' directive in the function 'print_results'. Once removed, the code works. 
-* AUTHOR: Luca Venturi
+* Luca Venturi comment: The program was getting stuck due to a 'barrier' directive in the function 'print_results'. Once removed, the code works. 
 ******************************************************************************/
 #include <omp.h>
 #include <stdio.h>

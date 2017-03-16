@@ -1,7 +1,6 @@
 /******************************************************************************
 * FILE: omp_fixed4.c
-* DESCRIPTION: The omp_bug4 was not working due to a 'segmentation fault' (memory problem). I solved the problem by allocating the memory dinamically for each thread with 'malloc'.
-* AUTHOR: Luca Venturi
+* Luca Venturi comment: The omp_bug4 was not working due to a 'segmentation fault' (memory problem). I solved the problem by allocating the memory dinamically for each thread with 'malloc'.
 ******************************************************************************/
 #include <omp.h>
 #include <stdio.h>
