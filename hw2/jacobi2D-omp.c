@@ -2,15 +2,16 @@
 #include <stdlib.h>
 #include <math.h>
 #include "util.h"
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 double norm(int N, double *v) 
 {
 	int j;
 	double sum_v=0;
-#pragma omp parallel reduction(+:sum_v)
 	for (j = 0; j < N; j++)
 		sum_v += v[j]*v[j];
-#pragma omp barrier
 
 	return sqrt(sum_v);
 }
@@ -22,7 +23,7 @@ void jacobi(int *M, double *eps, int N, double *u, double h)
 
 	min_eps = *eps;
 	max_it = *M;
-	norm_b0 = N;
+	norm_b0 = N+2;
 	N2 = (N+2)*(N+2);
 
 	temp_u = (double *) calloc(N2, sizeof(double));
@@ -32,19 +33,16 @@ void jacobi(int *M, double *eps, int N, double *u, double h)
 	#pragma omp parallel for schedule(dynamic,10)		
 		for (i = 0; i<N2; i++) 
 			temp_u[i] = u[i];
-	#pragma omp barrier
 	#pragma omp parallel for private(j) schedule(dynamic,10)
 		for (i = 1; i < N+1; i++) {
 			for (j = 1; j < N+1; j++) 
 				u[N*i+j] = (h + temp_u[N*(i-1)+j] + temp_u[N*(i+1)+j] + temp_u[N*i+j+1] + temp_u[N*i+j-1])/4.0;
 		}	
-	#pragma omp barrier
 	#pragma omp parallel for private(j) schedule(dynamic,10)
 		for (i = 1; i < N+1; i++) {
 			for (j = 1; j < N+1; j++)
 				b[N*i+j] = 1.0 + (u[N*(i-1)+j] + u[N*(i+1)+j] + u[N*i+j+1] + u[N*i+j-1] - 4.0*u[N*i+j])/h;
 		}
-	#pragma omp barrier
 			
 		norm_b = norm(N2, b);
 		norm_b /= norm_b0;
