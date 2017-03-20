@@ -2,16 +2,12 @@
 #include <math.h>
 #include "util.h"
 #include <string.h>
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 
 /* compute global residual, assuming ghost values are updated */
 double compute_residual(double *u, int Ntot, int Ntotsq, double invhsq)
 {
 	int i;
 	double tmp, res = 0.0;
-#pragma omp parallel for default(none) shared(u, Ntot, Ntotsq, invhsq) private(i, tmp) reduction(+:res)
 	for (i = Ntot+1; i <= Ntotsq-Ntot-1; i++) {
 		if ((i % Ntot) != 0 && (i % Ntot) != Ntot-1) {
 			tmp = (1.0 + (u[i-1] + u[i+1] + u[i+Ntot] + u[i-Ntot] - 4.0*u[i]) * invhsq);
@@ -30,25 +26,14 @@ int main(int argc, char * argv[])
 	int Ntot = N + 2;
 	int Ntotsq = Ntot * Ntot;
 	sscanf(argv[2], "%d", &max_iters);
-#pragma omp parallel
-	{
-#ifdef _OPENMP
-		int my_threadnum = omp_get_thread_num();
-		int numthreads = omp_get_num_threads();
-#else
-		int my_threadnum = 0;
-		int numthreads = 1;
-#endif
-		printf("Hello, I'm thread %d out of %d\n", my_threadnum, numthreads);
-	}
 
 	/* timing */
 	timestamp_type time1, time2;
 	get_timestamp(&time1);
 
 	/* Allocation of vectors, including left and right ghost points */
-	double * u    = (double *) calloc(sizeof(double), Ntotsq);
-	double * unew = (double *) calloc(sizeof(double), Ntotsq);	
+	double * u    = (double *) calloc(Ntotsq, sizeof(double));
+	double * unew = (double *) calloc(Ntotsq, sizeof(double));	
 	double h = 1.0 / (N + 1); 
 	double hsq = h * h;
 	double invhsq = 1./hsq;
@@ -60,7 +45,6 @@ int main(int argc, char * argv[])
 
 	for (iter = 0; iter < max_iters && res/res0 > tol; iter++) {
 
-#pragma omp parallel for default(none) shared(Ntot, Ntotsq, unew, u, hsq) schedule(dynamic,10)
     	/* Jacobi step for all the inner points */
     	for (i = Ntot+1; i <= Ntotsq-Ntot-1; i++) {
 			if ((i % Ntot) != 0 && (i % Ntot) != Ntot-1) {
@@ -73,7 +57,7 @@ int main(int argc, char * argv[])
 		utemp = u;	
 		u = unew;
 		unew = utemp;
-		
+
 		if (0 == (iter % 10)) {
       		res = compute_residual(u, Ntot, Ntotsq, invhsq);  	
 		}

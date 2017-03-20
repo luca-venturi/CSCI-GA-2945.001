@@ -22,7 +22,7 @@ void jacobi(int *M, double *eps, int N, double *u, double h)
 
 	min_eps = *eps;
 	max_it = *M;
-	norm_b0 = N;
+	norm_b0 = N+2;
 	N2 = (N+2)*(N+2);
 
 	temp_u = (double *) calloc(N2, sizeof(double));
@@ -34,11 +34,12 @@ void jacobi(int *M, double *eps, int N, double *u, double h)
 		
 		for (i = 1; i < N+1; i++) {
 			for (j = 1; j < N+1; j++) 
-				u[N*i+j] = (h + temp_u[N*(i-1)+j] + temp_u[N*(i+1)+j] + temp_u[N*i+j+1] + temp_u[N*i+j-1])/4.0;
+				u[(N+2)*i+j] = (h + temp_u[(N+2)*(i-1)+j] + temp_u[(N+2)*(i+1)+j] + temp_u[(N+2)*i+j+1] + temp_u[(N+2)*i+j-1])/4.0;
 		}
+
 		for (i = 1; i < N+1; i++) {
 			for (j = 1; j < N+1; j++)
-				b[N*i+j] = 1.0 + (u[N*(i-1)+j] + u[N*(i+1)+j] + u[N*i+j+1] + u[N*i+j-1] - 4.0*u[N*i+j])/h;
+				b[(N+2)*i+j] = 1.0 + (u[(N+2)*(i-1)+j] + u[(N+2)*(i+1)+j] + u[(N+2)*i+j+1] + u[(N+2)*i+j-1] - 4.0*u[(N+2)*i+j])/h;
 		}
 			
 		norm_b = norm(N2, b);
