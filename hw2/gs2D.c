@@ -1,86 +1,69 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <math.h>
 #include "util.h"
+#include <string.h>
 
-double norm(int N, double *v) 
+/* compute global residual, assuming ghost values are updated */
+double compute_residual(double *u, int Ntot, int Ntotsq, double invhsq)
 {
-	int j;
-	double sum_v=0;
-
-	for (j = 0; j < N; j++) {
-		sum_v += v[j]*v[j];
+	int i;
+	double tmp, res = 0.0;
+	for (i = Ntot+1; i <= Ntotsq-Ntot-1; i++) {
+		if ((i % Ntot) != 0 && (i % Ntot) != Ntot-1) {
+			tmp = (1.0 + (u[i-1] + u[i+1] + u[i+Ntot] + u[i-Ntot] - 4.0*u[i]) * invhsq);
+			res += tmp * tmp;
+		}
 	}
-
-	return sqrt(sum_v);
+	return sqrt(res);
 }
 
-void gs(int *M, double *eps, int N, double *u, double h) 
-{	
-	int it = 0, max_it, i, j, N2;
-	double *b, min_eps, norm_b0, norm_b=1;
-
-	min_eps = *eps;
-	max_it = *M;
-	norm_b0 = N;
-	N2 = (N+2)*(N+2);
-
-	b = (double *) calloc(N2, sizeof(double));
-
-	while (it < max_it && norm_b > min_eps) {
-		for (i = 1; i < N+1; i++) {
-			for (j = 1; j < N+1; j++) 
-				u[N*i+j] = (h + u[N*(i-1)+j] + u[N*(i+1)+j] + u[N*i+j+1] + u[N*i+j-1])/4.0;
-		}
-		for (i = 1; i < N+1; i++) {
-			for (j = 1; j < N+1; j++)
-				b[N*i+j] = 1.0 + (u[N*(i-1)+j] + u[N*(i+1)+j] + u[N*i+j+1] + u[N*i+j-1] - 4.0*u[N*i+j])/h;
-		}
-			
-		norm_b = norm(N2, b);
-		norm_b /= norm_b0;
-		it++;
-	}
-
-	free(b);
-	*eps = norm_b;
-	*M = it;
-}
-
-int main (int argc, char **argv) /* the program takes as input the number of grid points N and the maximum number of iterations M */
+int main(int argc, char * argv[])
 {
-	int N, *M;
-	double *u, h, *eps, elapsed;
+	int i, N, iter, max_iters;
+
+	sscanf(argv[1], "%d", &N);
+	int Ntot = N + 2;
+	int Ntotsq = Ntot * Ntot;
+	sscanf(argv[2], "%d", &max_iters);
+
+	/* timing */
 	timestamp_type time1, time2;
-
-	if (argc != 3 && argc != 2) {
-    	fprintf(stderr, "Argument not valid!\n");
-    	abort();
-  	}
-
-	N = atol(argv[1]);
-	h = 1/(double)((N+1)*(N+1));
-	M = (int *) malloc(sizeof(int));
-	if (argc == 3) {
-		*M = atol(argv[2]);
-	} else {
-		*M = 1000; 
-	}	
-	eps = (double *) malloc(sizeof(double));	
-	*eps = 0.0001;	
-	
-	u = (double *) calloc((N+2)*(N+2), sizeof(double));	
-	
 	get_timestamp(&time1);
-	gs(M, eps, N, u, h);		
-	get_timestamp(&time2);
-	elapsed = timestamp_diff_in_seconds(time1,time2);
-	printf("\nGauss-Seidel method for N=%d used %d iteration to reduce the initial error by a factor of %f.\n\n", N, *M, *eps);
-	printf("Time elapsed is %f seconds.\n\n", elapsed);
 
-	free(M);
-	free(eps);
-	free(u);	
+	/* Allocation of vectors, including left and right ghost points */
+	double * u    = (double *) calloc(sizeof(double), Ntotsq);
+	double h = 1.0 / (N + 1); 
+	double hsq = h * h;
+	double invhsq = 1./hsq;
+	double res, res0, tol = 1e-5;
+
+	/* initial residual */
+	res0 = N/*compute_residual(u, Ntot, Ntotsq, invhsq)*/;
+	res = res0;
+
+	for (iter = 0; iter < max_iters && res/res0 > tol; iter++) {
+
+    	/* Jacobi step for all the inner points */
+    	for (i = Ntot+1; i <= Ntotsq-Ntot-1; i++) {
+			if ((i % Ntot) != 0 && (i % Ntot) != Ntot-1) {
+				u[i] = 0.25 * (hsq + u[i-1] + u[i+1] + u[i+Ntot] + u[i-Ntot]);			
+			}	
+		}
+		
+		if (0 == (iter % 10)) {
+      		res = compute_residual(u, Ntot, Ntotsq, invhsq);  	
+		}
+	}
+
+	printf("\nIter: %d. Residual: %g\n", iter, res/res0);
+
+	/* Clean up */
+	free(u);
+
+	/* timing */
+	get_timestamp(&time2);
+	double elapsed = timestamp_diff_in_seconds(time1,time2);
+	printf("\nTime elapsed is %f seconds.\n\n", elapsed);
 
 	return 0;
 }
