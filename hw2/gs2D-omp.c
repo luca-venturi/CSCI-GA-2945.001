@@ -40,18 +40,18 @@ int main(int argc, char * argv[])
 #endif
 		printf("Hello, I'm thread %d out of %d\n", my_threadnum, numthreads);
 	}
-
-	int *temp;
-	int Nred = (int) (Ntotsq*0.5); // first update black then update red
-	int Nblack = Ntotsq - Nred;
-
+		
+	int Nr = (int) (Ntot*0.5); // first update black then update red
+	int Nb = Ntot - Nr;
+	printf("%d\n", Nb);
+	
 	/* timing */
 	timestamp_type time1, time2;
 	get_timestamp(&time1);
 
 	/* Allocation of vectors, including left and right ghost points */
-	double * u_red    = (double *) calloc(sizeof(double), Nred);
-	double * u_black    = (double *) calloc(sizeof(double), Nblack);
+	double * u_black    = (double *) calloc(sizeof(double), Nb);
+	double * u_red    = (double *) calloc(sizeof(double), Nr);
 	double h = 1.0 / (N + 1); 
 	double hsq = h * h;
 	double invhsq = 1./hsq;
@@ -61,31 +61,35 @@ int main(int argc, char * argv[])
 	res0 = N/*compute_residual(u, Ntot, Ntotsq, invhsq)*/;
 	res = res0;
 
+	int Nb_s = ((int)((Nb+1)*0.5))*2;
+	printf("%d", Nb_s);
+
 	for (iter = 0; iter < max_iters && res/res0 > tol; iter++) {
 
     	/* Jacobi step for all the black points */
     	for (i = Ntot+1; i <= Ntotsq-Ntot-1; i++) {
 			if ((i % Ntot) != 0 && (i % Ntot) != Ntot-1) {
-				u[i] = 0.25 * (hsq + u[i-1] + u[i+1] + u[i+Ntot] + u[i-Ntot]);			
+				u_black[i] = 0.25 * (hsq + u_black[i-1] + u_black[i+1] + u_black[i+Ntot] + u_black[i-Ntot]);			
 			}	
 		}
 
 		/* Jacobi step for all the red points */
     	for (i = Ntot+1; i <= Ntotsq-Ntot-1; i++) {
 			if ((i % Ntot) != 0 && (i % Ntot) != Ntot-1) {
-				u[i] = 0.25 * (hsq + u[i-1] + u[i+1] + u[i+Ntot] + u[i-Ntot]);			
+				u_red[i] = 0.25 * (hsq + u_red[i-1] + u_red[i+1] + u_red[i+Ntot] + u_red[i-Ntot]);			
 			}	
 		}
 		
 		if (0 == (iter % 10)) {
-      		res = compute_residual(u, Ntot, Ntotsq, invhsq);  	////////////////////////////////////////////////////////
+      		res = compute_residual(u_red, Ntot, Ntotsq, invhsq);  	////////////////////////////////////////////////////////
 		}
 	}
 
 	printf("\nIter: %d. Residual: %g\n", iter, res/res0);
 
 	/* Clean up */
-	free(u);
+	free(u_black);
+	free(u_red);
 
 	/* timing */
 	get_timestamp(&time2);
