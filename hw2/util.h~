@@ -85,4 +85,44 @@ static double timestamp_diff_in_seconds(timestamp_type start, timestamp_type end
 
 #define MAX_LINE_LEN 1024
 
+/*
+ * Read a line from stdin.
+ * From http://stackoverflow.com/a/314422/1148634
+ */
+static char *read_a_line(void)
+{
+  char * line = (char *) malloc(MAX_LINE_LEN), * linep = line;
+  size_t lenmax = MAX_LINE_LEN, len = lenmax;
+  int c;
+
+  if(line == NULL)
+    return NULL;
+
+  for(;;)
+  {
+    c = fgetc(stdin);
+    if(c == EOF)
+      break;
+
+    if(--len == 0)
+    {
+      char *linen = (char *) realloc(linep, lenmax *= 2);
+      len = lenmax;
+
+      if(linen == NULL)
+      {
+        free(linep);
+        return NULL;
+      }
+      line = linen + (line - linep);
+      linep = linen;
+    }
+
+    if((*line++ = c) == '\n')
+      break;
+  }
+  *line = '\0';
+  return linep;
+}
+
 #endif

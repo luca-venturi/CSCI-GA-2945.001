@@ -1,23 +1,23 @@
 CC = gcc
 FLAGS = -O3 -fopenmp -Wall -g
-EXECS = omp_fixed2 omp_fixed3 omp_fixed4 omp_fixed5 omp_fixed6 jacobi2D gs2D jacobi2D-omp gs2D-omp
+EXECS = omp_solved2 omp_solved3 omp_solved4 omp_solved5 omp_solved6 jacobi2D gs2D jacobi2D-omp gs2D-omp
 
 all: ${EXECS}
 
-omp_fixed2: omp_fixed2.c
-	${CC} ${FLAGS} $^ -o omp_fixed2
+omp_solved2: omp_solved2.c
+	${CC} ${FLAGS} $^ -o omp_solved2
 
-omp_fixed3: omp_fixed3.c
-	${CC} ${FLAGS} $^ -o omp_fixed3
+omp_solved3: omp_solved3.c
+	${CC} ${FLAGS} $^ -o omp_solved3
 
-omp_fixed4: omp_fixed4.c
-	${CC} ${FLAGS} $^ -o omp_fixed4
+omp_solved4: omp_solved4.c
+	${CC} ${FLAGS} $^ -o omp_solved4
 
-omp_fixed5: omp_fixed5.c
-	${CC} ${FLAGS} $^ -o omp_fixed5
+omp_solved5: omp_solved5.c
+	${CC} ${FLAGS} $^ -o omp_solved5
 
-omp_fixed6: omp_fixed6.c
-	${CC} ${FLAGS} $^ -o omp_fixed6
+omp_solved6: omp_solved6.c
+	${CC} ${FLAGS} $^ -o omp_solved6
 
 jacobi2D: jacobi2D.c
 	${CC} ${FLAGS} $^ -o jacobi2D -lm

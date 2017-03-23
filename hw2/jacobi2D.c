@@ -30,7 +30,7 @@ int main(int argc, char * argv[])
 	timestamp_type time1, time2;
 	get_timestamp(&time1);
 
-	/* Allocation of vectors, including left and right ghost points */
+	/* Allocation of vectors, including ghost points */
 	double * u    = (double *) calloc(sizeof(double), Ntotsq);
 	double * unew = (double *) calloc(sizeof(double), Ntotsq);	
 	double h = 1.0 / (N + 1); 
@@ -39,7 +39,7 @@ int main(int argc, char * argv[])
 	double res, res0, tol = 1e-5;
 
 	/* initial residual */
-	res0 = N/*compute_residual(u, Ntot, Ntotsq, invhsq)*/;
+	res0 = N;
 	res = res0;
 
 	for (iter = 0; iter < max_iters && res/res0 > tol; iter++) {

@@ -30,7 +30,7 @@ int main(int argc, char * argv[])
 	timestamp_type time1, time2;
 	get_timestamp(&time1);
 
-	/* Allocation of vectors, including left and right ghost points */
+	/* Allocation of vectors, including points */
 	double * u    = (double *) calloc(sizeof(double), Ntotsq);
 	double h = 1.0 / (N + 1); 
 	double hsq = h * h;
@@ -38,12 +38,12 @@ int main(int argc, char * argv[])
 	double res, res0, tol = 1e-5;
 
 	/* initial residual */
-	res0 = N/*compute_residual(u, Ntot, Ntotsq, invhsq)*/;
+	res0 = N;
 	res = res0;
 
 	for (iter = 0; iter < max_iters && res/res0 > tol; iter++) {
 
-    	/* Jacobi step for all the inner points */
+    	/* GS step for all the inner points */
     	for (i = Ntot+1; i <= Ntotsq-Ntot-1; i++) {
 			if ((i % Ntot) != 0 && (i % Ntot) != Ntot-1) {
 				u[i] = 0.25 * (hsq + u[i-1] + u[i+1] + u[i+Ntot] + u[i-Ntot]);			

@@ -1,6 +1,6 @@
 /******************************************************************************
 * FILE: omp_fixed2.c
-* Luca Venturi comment: The bug was caused because 'total' and 'tid' variables were considered as shared variables by default (since nothing was specified). Clearly 'tid' has to be set as private. I also set 'total' as private: in this way every thread computes a part of the total sum N*(N-1)/2. Another option would be to set . Also I changed the type of 'total' from 'float' to 'long double' (in this way the result we get is correct). 
+* Luca Venturi comment: The bug was caused because 'total' and 'tid' variables were considered as shared variables by default (since nothing was specified). Clearly 'tid' has to be set as private. I also set 'total' as private: in this way every thread computes a part of the total sum N*(N-1)/2. Also I changed the type of 'total' from 'float' to 'long double' (in this way the result we get is correct). 
 ******************************************************************************/ 
 #include <omp.h>
 #include <stdio.h>

@@ -65,6 +65,7 @@ int main(int argc, char * argv[])
 		printf("Hello, I'm thread %d out of %d\n", my_threadnum, numthreads);
 	}
 		
+    /* number of black and red variables */
 	int Nb = N*(Ntot+2)*0.5 + 2.5;
 	int Nr = Ntot*Ntot*0.5;
 
@@ -72,7 +73,7 @@ int main(int argc, char * argv[])
 	timestamp_type time1, time2;
 	get_timestamp(&time1);
 
-	/* Allocation of vectors, including left and right ghost points */
+	/* Allocation of vectors, including ghost points */
 	double * u_b    = (double *) calloc(sizeof(double), Nb);
 	double * u_r    = (double *) calloc(sizeof(double), Nr);
 	double h = 1.0 / (N + 1); 
@@ -84,6 +85,7 @@ int main(int argc, char * argv[])
 	res0 = N;
 	res = res0;
 
+	/* additional labeling variables */
 	int Nb_s = (Ntot+1)*0.5;
 	int Nb_e = (Ntot)*(Ntot-1)*0.5 - 1;
 	int Nb_r1 = 0;
@@ -104,7 +106,7 @@ int main(int argc, char * argv[])
 
 	for (iter = 0; iter < max_iters && res/res0 > tol; iter++) {
 
-    	/* Jacobi step for all the black points */
+    	/* GS step for all the black points */
 #pragma omp parallel for default(none) shared(Ntot, Nb_s, Nb_e, Nb_r1, Nb_r2, Nb_r3, Nb_flag, Nb_a, Nb_b, u_b, u_r, hsq) private(i, i_mod) schedule(dynamic,10)
     	for (i = Nb_s; i <= Nb_e; i++) {
 			i_mod = (i % Ntot); 
@@ -116,7 +118,7 @@ int main(int argc, char * argv[])
 			}	
 		}
 
-		/* Jacobi step for all the red points */
+		/* GS step for all the red points */
 #pragma omp parallel for default(none) shared(Ntot, Nr_s, Nr_e, Nr_r1, Nr_r2, Nr_r3, Nr_flag, Nr_a, Nr_b, u_b, u_r, hsq) private(i, i_mod) schedule(dynamic,10)
     	for (i = Nr_s; i <= Nr_e; i++) {
 			i_mod = (i % Ntot);			
