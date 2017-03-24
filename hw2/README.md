@@ -1,0 +1,7 @@
+# hpc17_cims_nyu - HW 2
+
+jacobi2D, jacobi2D-omp, gs2D, gs2D-omp requires as input the number of points N and the number of maximum iterations it_max 
+
+e.g:
+
+> ./gs2D-omp 100 1000
