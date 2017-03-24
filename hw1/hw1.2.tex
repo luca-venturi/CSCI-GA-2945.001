@@ -1,0 +1,105 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{mathrsfs}
+\usepackage[font={small},labelfont={sf,bf}]{caption}
+\usepackage{color}
+\usepackage{amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage{afterpage}
+\usepackage[T1]{fontenc}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{verbatim}
+\usepackage{bm}
+\usepackage{bbm}
+\usepackage{enumerate}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+
+\geometry{a4paper,top=3cm,bottom=3cm,left=2cm,right=2cm,heightrounded, bindingoffset=5mm}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\theoremstyle{plain}
+\newtheorem{theo}[definition]{Theorem}
+\newtheorem{prop}[definition]{Proposition}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{cor}[definition]{Corollary}
+\newtheorem{ex}[definition]{Example}
+\theoremstyle{remark}
+\newtheorem{rem}[definition]{Remark}
+\newtheorem{rem*}[definition]{}
+
+\newcommand*\mcup{\mathbin{\mathpalette\mcupinn\relax}}
+\newcommand*\mcupinn[2]{\vcenter{\hbox{$\mathsurround=0pt
+  \ifx\displaystyle#1\textstyle\else#1\fi\bigcup$}}}
+\newcommand*\mcap{\mathbin{\mathpalette\mcapinn\relax}}
+\newcommand*\mcapinn[2]{\vcenter{\hbox{$\mathsurround=0pt
+  \ifx\displaystyle#1\textstyle\else#1\fi\bigcap$}}}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\DeclarePairedDelimiter{\parr}{(}{)}
+\DeclarePairedDelimiter{\parq}{[}{]}
+\DeclarePairedDelimiter{\parqq}{\llbracket}{\rrbracket}
+\DeclarePairedDelimiter{\bra}{\lbrace}{\rbrace}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\expval}{\mathbb{E}}
+\DeclareMathOperator*{\varval}{\mathrm{Var}}
+
+\begin{document}
+
+\title{High Performance Computing \\ Homework assignment 1.2}
+\author{Luca Venturi}
+\maketitle
+
+In the next page I reported the \texttt{C} script of the program I wrote. Here are the run times I got taking $N=1000$ and $N=100,000$ (and maximum number of iterations $M=1000$). Running on a CIMS machine, I got:
+\begin{enumerate}
+\item[$\cdot$] Jacobi
+\begin{center}
+  \begin{tabular}{ | c | c | c | }
+    \hline
+    $N$ & \texttt{-O0} & \texttt{-O3} \\ \hline
+    1000 & 0.0311 & 0.0111 \\ \hline
+    100,000 & 1.8277 & 0.6680 \\ \hline
+  \end{tabular}
+\end{center}
+\item[$\cdot$] Gauss-Seidel
+\begin{center}
+  \begin{tabular}{ | c | c | c | }
+    \hline
+    $N$ & \texttt{-O0} & \texttt{-O3} \\ \hline
+    1000 & 0.0381 & 0.0210 \\ \hline
+    100,000 & 2.1496 & 1.2982 \\ \hline
+  \end{tabular}
+\end{center}
+\end{enumerate}
+Running on my machine, I got:
+\begin{enumerate}
+\item[$\cdot$] Jacobi
+\begin{center}
+  \begin{tabular}{ | c | c | c | }
+    \hline
+    $N$ & \texttt{-O0} & \texttt{-O3} \\ \hline
+    1000 & 0.0408 & 0.0151 \\ \hline
+    100,000 & 2.5506 & 0.8218 \\ \hline
+  \end{tabular}
+\end{center}
+\item[$\cdot$] Gauss-Seidel
+\begin{center}
+  \begin{tabular}{ | c | c | c | }
+    \hline
+    $N$ & \texttt{-O0} & \texttt{-O3} \\ \hline
+    1000 & 0.0344 & 0.0354 \\ \hline
+    100,000 & 3.4644 & 2.1768 \\ \hline
+  \end{tabular}
+\end{center}
+\end{enumerate}
+My machine (PC) has a processor \texttt{Intel-Core i3-4010U CPU @ 1.70 GHz} with 2 cores and a 4 GB total RAM. As Operating System I am using Linux Ubuntu 16.04 (64-bit).
+
+\end{document}
