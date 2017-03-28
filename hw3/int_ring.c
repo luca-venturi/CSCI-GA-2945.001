@@ -16,6 +16,7 @@ int main (int argc, char *argv[])
 
 	if (rank == size - 1) 
 		get_timestamp(&time1);
+	/* For the following, N should be >= 2 */
 	for (i = 0; i < N; i++) {
 		if (i == 0 && rank == 0) {	
 			MPI_Send(&tag, 1, MPI_INT, rank + 1, 199, MPI_COMM_WORLD);
@@ -39,6 +40,7 @@ int main (int argc, char *argv[])
 		else if (i == N -1 && rank == size - 1) {
 			MPI_Recv(&tag, 1, MPI_INT, rank - 1, 199, MPI_COMM_WORLD, &status);
 			get_timestamp(&time2);
+			/* Last value should be = N*np - 2 */			
 			printf("The last value of tag, received from process %d by process %d, is %d.\n", rank -1, rank, tag);
 			double elapsed = timestamp_diff_in_seconds(time1,time2);
 			printf("Time elapsed is %f seconds.\n", elapsed);
