@@ -4,7 +4,7 @@
 
 int main (int argc, char *argv[]) 
 {	
-	int size, rank, N, message = 0, i, k, tag = 0;
+	int size, rank, N, i, k, tag = 0;
 	MPI_Status status;
 	timestamp_type time1, time2;
 			
