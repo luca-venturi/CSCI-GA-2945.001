@@ -6,8 +6,8 @@
 
 > mpirun -np 6 ./int_ring 1000000
 
-The latency is estimated as elapsed/(N * size - 2) (elapsed = time elapsed during all the communications; (N * size - 2) = total number of messages sent).
-The last value, received by rank = size - 1, should be = N*np - 2.
+The latency is estimated as elapsed / (N * size - 2) (elapsed = time elapsed during all the communications; (N * size - 2) = total number of messages sent).
+The last value, received by rank = size - 1, should be = N * np - 2.
 
 Taking N = 1000000 and np = 6 we get ('tag' is the name of the message sent):
 
@@ -29,8 +29,8 @@ we get
 
 > mpirun -np 6 ./int_ring_largearray 10000
 
-The message sent is an array of 2MByte size. The bandwith is measured in Mbyte / s and estimated as (N*size-2)/(2*elapsed) (elapsed = time elapsed during all the communications; (N * size - 2) = total number of messages sent).
-The last value of tag[0] ('tag' being the array message sent through), which is updated as in int_ring.c, received by rank = size - 1, should be = N*np - 2.
+The message sent is an array of 2MByte size. The bandwith is measured in Mbyte / s and estimated as (N * size - 2) / (2 * elapsed) (elapsed = time elapsed during all the communications; (N * size - 2) = total number of messages sent).
+The last value of tag[0] ('tag' being the array message sent through), which is updated as in int_ring.c, received by rank = size - 1, should be = N * np - 2.
 
 Taking N = 10000 and np = 6 we get:
 
