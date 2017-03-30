@@ -34,4 +34,7 @@ The last value of tag[0] ('tag' being the array message sent through), which is 
 
 Taking N = 10000 and np = 6 we get:
 
-> 
+> The last value of tag[0], received from process 4 by process 5, is 59998.
+> Time elapsed is 38.029484 seconds.
+> Estimated bandwitdh is of 788.835325 Mbyte/s.
+
