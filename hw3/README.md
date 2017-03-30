@@ -1,6 +1,6 @@
 # HW 3 
 
-# Everything was run on a CIMS machine
+[Everything was run on a CIMS machine]
 
 - Program ./int_ring takes as input the number N (= 1000000 in the example below) of loops:
 
