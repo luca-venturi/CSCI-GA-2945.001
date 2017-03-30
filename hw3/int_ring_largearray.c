@@ -51,7 +51,7 @@ int main (int argc, char *argv[])
 			printf("The last value of tag[0], received from process %d by process %d, is %d.\n", rank -1, rank, tag[0]);
 			double elapsed = timestamp_diff_in_seconds(time1,time2);
 			printf("Time elapsed is %f seconds.\n", elapsed);
-			printf("Estimated bandwitdh is of %f Mbyte/s.\n", ((float)(N*size-2)*2)/elapsed);
+			printf("Estimated bandwitdh is of %f Mbyte/s.\n", ((float)(N*size-2))/elapsed);
 		}
 	}
 
