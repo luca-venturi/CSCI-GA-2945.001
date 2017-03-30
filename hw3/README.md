@@ -4,7 +4,7 @@
 
 > mpirun -np 6 ./int_ring 100
 
-The latency is estimated as elapsed/(N*size-2) (elapsed = time elapsed during all the communications; (N*size-2) = total number of messages sent)
+The latency is estimated as elapsed/(N * size - 2) ( elapsed = time elapsed during all the communications; (N * size - 2) = total number of messages sent)
 The last value, received by rank = size - 1, should be = N*np - 2.
 
 - Taking N = 1000000 we get:
