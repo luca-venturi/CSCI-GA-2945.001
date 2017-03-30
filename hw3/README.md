@@ -11,8 +11,8 @@ The last value, received by rank = size - 1, should be = N*np - 2.
 
 Taking N = 1000000 and np = 6 we get ('tag' is the name of the message sent):
 
-> The last value of tag, received from process 4 by process 5, is 5999998.
-> Time elapsed is 8.093902 seconds.
+> The last value of tag, received from process 4 by process 5, is 5999998.\\
+> Time elapsed is 8.093902 seconds.\\
 > Estimated latency is 0.000001.
 
 Running it with np = 10 on machines crunchy1 and crunchy3:
