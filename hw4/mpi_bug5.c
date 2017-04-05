@@ -1,5 +1,5 @@
 /******************************************************************************
-* FILE: mpi_bug5.c
+* FILE: mpi_s5.c
 * DESCRIPTION: 
 *   This is an "unsafe" program. It's behavior varies depending upon the
 *   platform and MPI library
@@ -27,7 +27,7 @@ MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
 MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
 if (rank == 0) {
-  printf ("mpi_bug5 has started...\n");
+  printf ("mpi_solved5 has started...\n");
   if (numtasks > 2) 
     printf("INFO: Number of tasks= %d. Only using 2 tasks.\n", numtasks);
   }
