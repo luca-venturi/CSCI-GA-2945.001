@@ -14,7 +14,9 @@ Running on a CIMS machine I got:
  | 1000  | 0.0381 | 0.0210 |
  | 100000 | 2.1496 | 1.2982 |
 
-##### Running on my machine I got:
+---
+
+###### Running on my machine I got:
 
 * Jacobi
 
