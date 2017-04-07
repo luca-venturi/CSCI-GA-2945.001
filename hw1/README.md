@@ -6,7 +6,7 @@ Program ./hw1 takes as input the number N (= 100 in the example below) of discre
 
 > ./hw1 100 1000
 
-##### Timings
+#### Timings
 
 Running on a CIMS machine I got:
 
