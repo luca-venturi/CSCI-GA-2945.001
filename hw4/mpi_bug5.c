@@ -1,13 +1,6 @@
 /******************************************************************************
-* FILE: mpi_s5.c
-* DESCRIPTION: 
-*   This is an "unsafe" program. It's behavior varies depending upon the
-*   platform and MPI library
-* AUTHOR: Blaise Barney 
-* LAST REVISED: 01/24/09
-* Hint: If possible, try to run the program on two different machines,
-* which are connected through a network. You should see uneven timings;
-* try to understand/explain them.
+* FILE: mpi_solved5.c
+* Comment: Different implementations uses different methods to send and receive messages through network or even within one computer. Furthermore different platforms have different internal mechanisms to carry the messages through network or within memory. Many aspects of a computer affects the time it takes to carry a message from one process to another. Moreover OS's CPU scheduler makes undeterministic decisions on when to execute Processes and their message moving commands. Changed the while condition to make it stop at some point.
 ******************************************************************************/
 #include "mpi.h"
 #include <stdio.h>
@@ -40,7 +33,7 @@ if (rank == 0) {
      data[i] =  'x';
 
   start = MPI_Wtime();
-  while (1) {
+  while (count < 1000) {
     MPI_Send(data, MSGSIZE, MPI_BYTE, dest, tag, MPI_COMM_WORLD);
     count++;
     if (count % 10 == 0) {
@@ -54,7 +47,7 @@ if (rank == 0) {
 /****************************** Receive task ********************************/
 
 if (rank == 1) {
-  while (1) {
+  while (count < 1000) {
     MPI_Recv(data, MSGSIZE, MPI_BYTE, source, tag, MPI_COMM_WORLD, &status);
     /* Do some work  - at least more than the send task */
     result = 0.0;
