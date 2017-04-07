@@ -1,13 +1,13 @@
-Running on a CIMS machine I got:
+* Running on a CIMS machine I got:
 
-* Jacobi
+..* Jacobi
 
  | N	| -O0 | -O3	|
  | --- | --- | --- |
  | 1000  | 0.0311 | 0.0111 |
  | 100000 | 1.8277 | 0.6680 |
 
-* Gauss-Seidel
+..* Gauss-Seidel
 
  | N	| -O0 | -O3	|
  | --- | --- | --- |
