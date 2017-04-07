@@ -1,15 +1,31 @@
-* Running on a CIMS machine I got:
+Running on a CIMS machine I got:
 
-..* Jacobi
+* Jacobi
 
  | N	| -O0 | -O3	|
  | --- | --- | --- |
  | 1000  | 0.0311 | 0.0111 |
  | 100000 | 1.8277 | 0.6680 |
 
-..* Gauss-Seidel
+* Gauss-Seidel
 
  | N	| -O0 | -O3	|
  | --- | --- | --- |
  | 1000  | 0.0381 | 0.0210 |
  | 100000 | 2.1496 | 1.2982 |
+
+Running on my machine I got:
+
+* Jacobi
+
+ | N	| -O0 | -O3	|
+ | --- | --- | --- |
+ | 1000  | 0.0408 | 0.0151 |
+ | 100000 | 2.5506 | 0.8218 |
+
+* Gauss-Seidel
+
+ | N	| -O0 | -O3	|
+ | --- | --- | --- |
+ | 1000  | 0.0344 | 0.0354 |
+ | 100000 | 3.4644 | 2.1768 |
