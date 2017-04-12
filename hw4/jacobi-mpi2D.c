@@ -1,6 +1,6 @@
 /* MPI-parallel Jacobi smoothing to solve - (u_xx + u_yy) = f
- * Global vector has N^2 unknowns, each processor works with its
- * part, which has lN = N/p unknowns.
+ * Global vector has (N+2)*(N+2) unknowns, each processor (p total) works with its
+ * part, which has (lN+2)*(lN+2) unknowns, where lN = N / sqrt(p), p = 4**j.
  * Author: Luca Venturi
  */
 #include <stdio.h>
@@ -68,7 +68,7 @@ int main(int argc, char * argv[])
 		printf("Exiting. N must be a multiple of sqrt(p)\n");
 		MPI_Abort(MPI_COMM_WORLD, 0);
 	}
-	MPI_Status status[2*lN+2];
+	MPI_Status statusa, statusb, statusl, statusr;
 	/* timing */
 	MPI_Barrier(MPI_COMM_WORLD);
 	timestamp_type time1, time2;
@@ -78,6 +78,13 @@ int main(int argc, char * argv[])
 	double * lu    = (double *) calloc(sizeof(double), lNtotsq);
 	double * lunew = (double *) calloc(sizeof(double), lNtotsq);
 	double * lutemp;
+	double *lughost_left, *lughost_right;
+	if (mpirank % lp != lp -1) {
+		lughost_left = (double *) malloc(sizeof(double)*lN);
+	}
+	if (mpirank % lp != 0) {
+		lughost_right = (double *) malloc(sizeof(double)*lN);
+	}
 
 	double h = 1.0 / (N + 1);
 	double hsq = h * h;
@@ -99,38 +106,42 @@ int main(int argc, char * argv[])
 		}
 
 		/* communicate ghost values above - below */
-		/* above -> below */
+		/* send: above -> below; receive: above <- below */
 		if (mpirank >= lp) {
 			MPI_Send(&(lunew[lNtot+1]), lN, MPI_DOUBLE, mpirank-lp, 124, MPI_COMM_WORLD);
-			MPI_Recv(&(lunew[1]), lN, MPI_DOUBLE, mpirank-lp, 123, MPI_COMM_WORLD, &(status[0]));
+			MPI_Recv(&(lunew[1]), lN, MPI_DOUBLE, mpirank-lp, 123, MPI_COMM_WORLD, &statusa);
 		}
-		/* below -> above */
+		/* send: below -> above; receive: below <- above */
 		if (mpirank < p - lp) {
 			MPI_Send(&(lunew[lNtotsq-lNtot-lN-1]), lN, MPI_DOUBLE, mpirank+lp, 123, MPI_COMM_WORLD);
-			MPI_Recv(&(lunew[lNtotsq-lN-1]), lN, MPI_DOUBLE, mpirank+lp, 124, MPI_COMM_WORLD, &(status[lN+1]));
+			MPI_Recv(&(lunew[lNtotsq-lN-1]), lN, MPI_DOUBLE, mpirank+lp, 124, MPI_COMM_WORLD, &statusb);
 		}
 
 		/* communicate ghost values right - left */
-		/* left -> right */
+		/* send: left -> right; receive: left <- right */
 		if (mpirank % lp != lp -1) {
-			for (i =1; i <= lN; i++) {
-				MPI_Send(&(lunew[lNtot*i+lN]), 1, MPI_DOUBLE, mpirank+1, 128+2*i-1, MPI_COMM_WORLD);
-				MPI_Recv(&(lunew[lNtot*i+lN+1]), 1, MPI_DOUBLE, mpirank+1, 128+2*i, MPI_COMM_WORLD, &(status[i]));
-			}
+			for (i = 0; i < lN; i++)
+				lughost_left[i] = lunew[lNtot*(i+1)+lN];
+			MPI_Send(&(lughost_left[0]), lN, MPI_DOUBLE, mpirank+1, 128, MPI_COMM_WORLD);
+			MPI_Recv(&(lughost_left[0]), lN, MPI_DOUBLE, mpirank+1, 129, MPI_COMM_WORLD, &statusl);
+			for (i = 0; i < lN; i++)
+				lunew[lNtot*(i+1)+lN+1] = lughost_left[i];
 		}
-		/* right -> left */
+		/* send: right -> left; receive: right <- left */
 		if (mpirank % lp != 0) {
-			for (i =1; i <= lN; i++) {
-				MPI_Send(&(lunew[lNtot*i+1]), 1, MPI_DOUBLE, mpirank-1, 128+2*i, MPI_COMM_WORLD);
-				MPI_Recv(&(lunew[lNtot*i]), 1, MPI_DOUBLE, mpirank-1, 128+2*i-1, MPI_COMM_WORLD, &(status[lN+i+1]));
-			}
+			for (i = 0; i < lN; i++)
+				lughost_right[i] = lunew[lNtot*(i+1)+1];
+			MPI_Send(&(lughost_right[0]), lN, MPI_DOUBLE, mpirank-1, 129, MPI_COMM_WORLD);
+			MPI_Recv(&(lughost_right[0]), lN, MPI_DOUBLE, mpirank-1, 128, MPI_COMM_WORLD, &statusr);
+			for (i = 0; i < lN; i++)
+				lunew[lNtot*(i+1)] = lughost_right[i];
 		}
 
 
 		/* copy newu to u using pointer flipping */
 		lutemp = lu; lu = lunew; lunew = lutemp;
 		if (0 == (iter % 10)) {
-			gres = compute_residual(lu, lN, lNtot, invhsq); ////////
+			gres = compute_residual(lu, lN, lNtot, invhsq); 
 			if (0 == mpirank) {
 				printf("Iter %d: Residual: %g\n", iter, gres/gres0);
 			}
@@ -140,6 +151,12 @@ int main(int argc, char * argv[])
 	/* Clean up */
 	free(lu);
 	free(lunew);
+	if (mpirank % lp != lp -1) {
+		free(lughost_left);
+	}
+	if (mpirank % lp != 0) {
+		free(lughost_right);
+	}
 
 	/* timing */
 	MPI_Barrier(MPI_COMM_WORLD);
