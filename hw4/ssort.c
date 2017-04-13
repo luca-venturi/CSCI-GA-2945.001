@@ -44,7 +44,7 @@ int main( int argc, char *argv[])
 	/* sort locally */
 	qsort(vec, N, sizeof(int), compare);
 
-    /* randomly sample s entries from vector or select local splitters, i.e., every N/P-th entry of the sorted vector */
+	/* select local splitters, i.e., every N/P-th entry of the sorted vector */
 	s = N / p;
 	int *send, *recv;
 	send = (int *) calloc(s, sizeof(int));
@@ -92,7 +92,7 @@ int main( int argc, char *argv[])
 			bins_send[j][i] = vec[loc_splt[j-1]+i];
 	}
 
-	/* send and receive: either you use MPI_AlltoallV, or (and that might be easier), use an MPI_Alltoall to share with every processor how many integers it should expect, and then use MPI_Send and MPI_Recv to exchange the data */
+	/* send and receive: MPI_Alltoall share with every processor how many integers it should expect, and then MPI_Send and MPI_Recv to exchange the data */
 	int *bins_recv[p], bins_recv_size[p];
 	MPI_Alltoall(bins_send_size, 1, MPI_INT, bins_recv_size, 1, MPI_INT, MPI_COMM_WORLD);
 	for (j = 0; j < p; j++) {
@@ -122,7 +122,7 @@ int main( int argc, char *argv[])
 		free(bins_recv[j]);
 	}
 	
-	/* do a local sort */
+	/* local sort */
 	qsort(vec_new, new_vec_len, sizeof(int), compare);
 
 	/* every processor writes its result to a file */
