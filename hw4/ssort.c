@@ -133,7 +133,7 @@ int main( int argc, char *argv[])
 
 	/* every processor writes its result to a file */
 	char str[30];
-	sprintf(str, "ssort_result/p%d.txt", rank);
+	sprintf(str, "ss/p%d.txt", rank);
 	FILE *f = fopen(str, "w");
 	for (j = 0; j < new_vec_len; j++)
 		fprintf(f, "%d\n", vec_new[j]);
