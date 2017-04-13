@@ -67,8 +67,6 @@ int main( int argc, char *argv[])
 
 	/* root process broadcasts splitters */
 	MPI_Bcast(splt, p-1, MPI_INT, 0, MPI_COMM_WORLD);
-	
-	/* so far so good */	
 
 	/* every processor uses the obtained splitters to decide which integers need to be sent to which other processor (local bins) */
 	int *bins_send[p], bins_send_size[p], loc_splt[p-1];
@@ -103,7 +101,6 @@ int main( int argc, char *argv[])
 			MPI_Send(bins_send[j], bins_send_size[j], MPI_INT, j, p*j+rank, MPI_COMM_WORLD);
 		}
 	}
-	printf("\n\n\nciao\n\n\n");	/* PROBLEM in the above MPI_Send for CIMS and STAMPEDE */
 	for (j = 0; j < p; j++) 
 		bins_recv[j] = (int *) calloc(bins_recv_size[j], sizeof(int));
 	for (i = 0; i < bins_recv_size[rank]; i++)		
