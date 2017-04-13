@@ -36,9 +36,8 @@ int main( int argc, char *argv[])
 	srand((unsigned int) (rank + 393919));
 
 	/* fill vector with random integers */
-	for (i = 0; i < N; ++i) {
+	for (i = 0; i < N; ++i)
 		vec[i] = rand();
-	}
 	printf("rank: %d, first entry: %d\n", rank, vec[0]);
 
 	/* sort locally */
