@@ -99,12 +99,19 @@ int main( int argc, char *argv[])
 	int *bins_recv[p], bins_recv_size[p];
 	MPI_Alltoall(bins_send_size, 1, MPI_INT, bins_recv_size, 1, MPI_INT, MPI_COMM_WORLD);
 	for (j = 0; j < p; j++) {
+		if (j != rank) {
 			MPI_Send(bins_send[j], bins_send_size[j], MPI_INT, j, p*j+rank, MPI_COMM_WORLD);
+		}
 	}
+	printf("\n\n\nciao\n\n\n");	/* PROBLEM in the above MPI_Send for CIMS and STAMPEDE */
 	for (j = 0; j < p; j++) 
 		bins_recv[j] = (int *) calloc(bins_recv_size[j], sizeof(int));
+	for (i = 0; i < bins_recv_size[rank]; i++)		
+		bins_recv[rank][i] = bins_send[rank][i];
 	for (j = 0; j < p; j++) {
+		if (j != rank) {
 			MPI_Recv(bins_recv[j], bins_recv_size[j], MPI_INT, j, p*rank+j, MPI_COMM_WORLD, &(status[j]));
+		}
 	}
 	int new_vec_len = 0, tmp = 0;
 	for (j = 0; j < p; j++)
