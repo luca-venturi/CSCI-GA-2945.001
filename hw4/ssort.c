@@ -54,6 +54,7 @@ int main( int argc, char *argv[])
 
 	/* every processor communicates the selected entries to the root processor */
 	MPI_Gather(send, s, MPI_INT, recv, s, MPI_INT, 0, MPI_COMM_WORLD);
+	free(send);
 
 	/* root processor does a sort, determinates splitters that split the data into P buckets of approximately the same size */
 	int splt[p-1];
@@ -62,6 +63,7 @@ int main( int argc, char *argv[])
 		for (i = 0; i < p-1; i++)
 			splt[i] = recv[s*(i+1) - 1];
 	}
+	free(recv);
 
 	/* root process broadcasts splitters */
 	MPI_Bcast(splt, p-1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -91,6 +93,7 @@ int main( int argc, char *argv[])
 		for (i = 0; i < bins_send_size[j]; i++)
 			bins_send[j][i] = vec[loc_splt[j-1]+i];
 	}
+	free(vec);
 
 	/* send and receive: MPI_Alltoall share with every processor how many integers it should expect, and then MPI_Send and MPI_Recv to exchange the data */
 	int *bins_recv[p], bins_recv_size[p];
@@ -134,9 +137,6 @@ int main( int argc, char *argv[])
 	fclose(f);
 	free(vec_new);
 	
-	free(vec);
-	free(send);
-	free(recv);
 	MPI_Finalize();
 	return 0;
 }
