@@ -45,7 +45,7 @@ int main( int argc, char *argv[])
 	qsort(vec, N, sizeof(int), compare);
 
     /* randomly sample s entries from vector or select local splitters, i.e., every N/P-th entry of the sorted vector */
-	s = (int)(N / p);
+	s = N / p;
 	int *send, *recv;
 	send = (int *) calloc(s, sizeof(int));
 	recv = (int *) calloc(s*p, sizeof(int));
@@ -57,15 +57,16 @@ int main( int argc, char *argv[])
 
 	/* root processor does a sort, determinates splitters that split the data into P buckets of approximately the same size */
 	int splt[p-1];
-	int splt_send[p-1];
 	if (0 == rank) {
 		qsort(recv, s*p, sizeof(int), compare);
 		for (i = 0; i < p-1; i++)
-			splt_send[i] = recv[s*(i+1) - 1];
+			splt[i] = recv[s*(i+1) - 1];
 	}
 
 	/* root process broadcasts splitters */
-	MPI_Scatter(splt_send, p-1, MPI_INT, splt, p-1, MPI_INT, 0, MPI_COMM_WORLD);
+	MPI_Bcast(splt, p-1, MPI_INT, 0, MPI_COMM_WORLD);
+	
+	/* so far so good */	
 
 	/* every processor uses the obtained splitters to decide which integers need to be sent to which other processor (local bins) */
 	int *bins_send[p], bins_send_size[p], loc_splt[p-1];
@@ -95,17 +96,12 @@ int main( int argc, char *argv[])
 	int *bins_recv[p], bins_recv_size[p];
 	MPI_Alltoall(bins_send_size, 1, MPI_INT, bins_recv_size, 1, MPI_INT, MPI_COMM_WORLD);
 	for (j = 0; j < p; j++) {
-		//if (j != rank) {
 			MPI_Send(bins_send[j], bins_send_size[j], MPI_INT, j, p*j+rank, MPI_COMM_WORLD);
-		//}
 	}
 	for (j = 0; j < p; j++) 
 		bins_recv[j] = (int *) calloc(bins_recv_size[j], sizeof(int));
-	//bins_recv[rank] = bins_send[rank];
 	for (j = 0; j < p; j++) {
-		//if (j != rank) {
 			MPI_Recv(bins_recv[j], bins_recv_size[j], MPI_INT, j, p*rank+j, MPI_COMM_WORLD, &(status[j]));
-		//}
 	}
 	int new_vec_len = 0, tmp = 0;
 	for (j = 0; j < p; j++)
@@ -136,9 +132,9 @@ int main( int argc, char *argv[])
 	for (j = 0; j < new_vec_len; j++)
 		fprintf(f, "%d\n", vec_new[j]);
 	fclose(f);
+	free(vec_new);
 	
 	free(vec);
-	free(vec_new);
 	free(send);
 	free(recv);
 	MPI_Finalize();
