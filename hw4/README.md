@@ -20,6 +20,8 @@ the comments to the solved mpi_bug_.c are reported at the beginning of the respe
  | 32000 | 1000 | 64 | 1024 | 21.748358 |
  | 64000 | 1000 | 256 | 4096 | 22.681867 |
 
+* Jacobi Weak Scaling plot (p = # of processors, t = time)
+
 ![weak scaling plot](ws.png)
 
 * Jacobi Strong Scaling (N = constant, it_max = 1000)
@@ -30,6 +32,10 @@ the comments to the solved mpi_bug_.c are reported at the beginning of the respe
  | 6400 | 400 | 16 | 256 | 2.270839 |
  | 6400 | 200 | 64 | 1024 | 1.084813 |
  | 6400 | 100 | 256 | 4096 | 0.409628 |
+
+* Jacobi Strong Scaling plot (p = # of processors, t = time)
+
+![strong scaling plot](ss.png)
 
 ### ssort
 
