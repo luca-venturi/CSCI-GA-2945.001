@@ -1,6 +1,6 @@
 /******************************************************************************
 * FILE: mpi_solved1.c
-* Comment: the 'tag' variables were not set correctly. I changed them so that 'tag' = 'destinary of the message'. Also included 'return 0' at the end of 'main' and removed variabled 'rc', which was useless, in order to avoid warning messages in compiling.  
+* Comment: the 'tag' variables were not set correctly. I changed them so that 'tag' = 'destinary of the message'.
 ******************************************************************************/
 #include "mpi.h"
 #include <stdio.h>

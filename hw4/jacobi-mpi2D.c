@@ -79,13 +79,9 @@ int main(int argc, char * argv[])
 	double * lunew = (double *) calloc(sizeof(double), lNtotsq);
 	double * lutemp;
 	double *lughost_left, *lughost_right;
-	if (mpirank % lp != lp -1) {
-		lughost_left = (double *) malloc(sizeof(double)*lN);
-	}
-	if (mpirank % lp != 0) {
-		lughost_right = (double *) malloc(sizeof(double)*lN);
-	}
-
+	lughost_left = (double *) malloc(sizeof(double)*lN);
+	lughost_right = (double *) malloc(sizeof(double)*lN);
+	
 	double h = 1.0 / (N + 1);
 	double hsq = h * h;
 	double invhsq = 1./hsq;
@@ -151,12 +147,8 @@ int main(int argc, char * argv[])
 	/* Clean up */
 	free(lu);
 	free(lunew);
-	if (mpirank % lp != lp -1) {
-		free(lughost_left);
-	}
-	if (mpirank % lp != 0) {
-		free(lughost_right);
-	}
+	free(lughost_left);
+	free(lughost_right);
 
 	/* timing */
 	MPI_Barrier(MPI_COMM_WORLD);

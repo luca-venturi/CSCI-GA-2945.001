@@ -12,7 +12,7 @@ float  data[ARRAYSIZE];
 
 int main (int argc, char *argv[])
 {
-int   numtasks, taskid, rc, dest, offset, i, j, tag1,
+int   numtasks, taskid, rc = 0, dest, offset, i, j, tag1,
       tag2, source, chunksize; 
 float mysum, sum;
 float update(int myoffset, int chunk, int myid);
@@ -101,7 +101,7 @@ if (taskid > MASTER) {
   } /* end of non-master */
 
 MPI_Finalize();
-
+return 0;
 }   /* end of main */
 
 
