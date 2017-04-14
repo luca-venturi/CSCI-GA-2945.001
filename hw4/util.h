@@ -79,6 +79,6 @@ static double timestamp_diff_in_seconds(timestamp_type start, timestamp_type end
   return temp.tv_sec + 1e-9*temp.tv_nsec;
 }
 
-
+#endif
 
 #endif
