@@ -12,13 +12,6 @@ the comments to the solved mpi_bug_.c are reported at the beginning of the respe
 
  | N	| Nl | nodes | tasks | time |
  | --- | --- | --- | --- | --- |
- | 100  | 100 | 1 | 1 | 0.026222 |
- | 200 | 100 | 1 | 4 | 0.029644 |
- | 400 | 100 | 1 | 16 | 0.035653 |
- | 800 | 100 | 4 | 64 | 0.189027 |
- | 1600 | 100 | 16 | 256 | 0.156606 |
- | 3200 | 100 | 64 | 1024 | 0.395132 |
- | 6400 | 100 | 256 | 4096 | 0.459740 |
  | 1000  | 1000 | 1 | 1 | 19.936430 |
  | 2000 | 1000 | 1 | 4 | 20.289741 |
  | 4000 | 1000 | 1 | 16 | 20.513429 |
@@ -26,6 +19,8 @@ the comments to the solved mpi_bug_.c are reported at the beginning of the respe
  | 16000 | 1000 | 16 | 256 | 21.253908 |
  | 32000 | 1000 | 64 | 1024 | 21.748358 |
  | 64000 | 1000 | 256 | 4096 | 22.681867 |
+
+![weak scaling plot](ws.png)
 
 * Jacobi Strong Scaling (N = constant, it_max = 1000)
 
