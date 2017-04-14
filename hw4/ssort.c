@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <mpi.h>
+#include "util.h"
 #include <stdlib.h>
 
 static int compare(const void *a, const void *b)
@@ -27,6 +28,11 @@ int main( int argc, char *argv[])
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &p);
 	MPI_Status status[p-1]; 
+
+	/* timing */
+	MPI_Barrier(MPI_COMM_WORLD);
+	timestamp_type time1, time2;
+	get_timestamp(&time1);
 
 	/* Number of random numbers per processor */
 	sscanf(argv[1], "%d", &N);
@@ -130,6 +136,14 @@ int main( int argc, char *argv[])
 	
 	/* local sort */
 	qsort(vec_new, new_vec_len, sizeof(int), compare);
+
+	/* timing */
+	MPI_Barrier(MPI_COMM_WORLD);
+	get_timestamp(&time2);
+	double elapsed = timestamp_diff_in_seconds(time1,time2);
+	if (0 == rank) {
+		printf("\nTime elapsed is %f seconds.\n\n", elapsed);
+	}
 
 	/* every processor writes its result to a file */
 	char str[30];
