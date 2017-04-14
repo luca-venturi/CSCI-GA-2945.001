@@ -1,6 +1,6 @@
 /******************************************************************************
 * FILE: mpi_solved5.c
-* Comment: The program was hanging or (depending on the implementation) due to overbuffering on the receveing side. I fixed it including an MPI_Barrier in both the sending and receveing loops. I also changed the while condition to make the program stop at some point.
+* Comment: The program was hanging or (depending on the implementation) due to overbuffering on the receveing side. I fixed it including making task 0 using MPI_Ssend instead of MPI_Send, so that it waits everytime for rank 1 to have received the message. I also changed the while condition to make the program stop at some point.
 ******************************************************************************/
 #include "mpi.h"
 #include <stdio.h>
@@ -34,8 +34,7 @@ if (rank == 0) {
 
   start = MPI_Wtime();
   while (count < 1000) {
-    MPI_Send(data, MSGSIZE, MPI_BYTE, dest, tag, MPI_COMM_WORLD);
-	MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Ssend(data, MSGSIZE, MPI_BYTE, dest, tag, MPI_COMM_WORLD);
     if (count % 10 == 0) {
       end = MPI_Wtime();
       printf("Count= %d  Time= %f sec.\n", count, end-start);
@@ -50,7 +49,6 @@ if (rank == 0) {
 if (rank == 1) {
   while (count < 1000) {
     MPI_Recv(data, MSGSIZE, MPI_BYTE, source, tag, MPI_COMM_WORLD, &status);
-	MPI_Barrier(MPI_COMM_WORLD);
     /* Do some work  - at least more than the send task */
     result = 0.0;
     for (i=0; i < 1000000; i++) 
