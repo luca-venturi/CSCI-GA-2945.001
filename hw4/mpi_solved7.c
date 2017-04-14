@@ -26,6 +26,6 @@ if (taskid == root)
 MPI_Bcast(&buffer, count, MPI_INT, root, MPI_COMM_WORLD);
 
 MPI_Finalize();
-
+return 0;
 }
 

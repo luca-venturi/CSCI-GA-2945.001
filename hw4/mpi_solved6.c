@@ -12,7 +12,7 @@
 
 int main (int argc, char *argv[])
 {
-int numtasks, rank, buf, tag1=1, i, rc, dest, src, offset = 0, nreqs;
+int numtasks, rank, buf, tag1=1, i, rc=0, dest, src, offset = 0, nreqs;
 double T1, T2;
 MPI_Request reqs[REPS*2];
 MPI_Status stats[REPS*2];
