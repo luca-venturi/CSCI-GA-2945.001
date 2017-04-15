@@ -43,7 +43,7 @@ the comments to the solved mpi_bug_.c are reported at the beginning of the respe
 
 ### ssort
 
-./ssort takes as input lenght of the initial vector (N):
+./ssort takes as input the lenght of the initial vector (N):
 
 > mpirun -np 4 ./ssort 1000
 
