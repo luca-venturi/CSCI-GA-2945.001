@@ -27,7 +27,8 @@ int main( int argc, char *argv[])
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &p);
-	MPI_Status status[p-1]; 
+	MPI_Status status[2*(p-1)];
+	MPI_Request request[2*(p-1)];
 
 	/* timing */
 	MPI_Barrier(MPI_COMM_WORLD);
@@ -102,8 +103,11 @@ int main( int argc, char *argv[])
 	int *bins_recv[p], bins_recv_size[p];
 	MPI_Alltoall(bins_send_size, 1, MPI_INT, bins_recv_size, 1, MPI_INT, MPI_COMM_WORLD);
 	for (j = 0; j < p; j++) {
-		if (j != rank) {
-			MPI_Send(bins_send[j], bins_send_size[j], MPI_INT, j, p*j+rank, MPI_COMM_WORLD);
+		if (j < rank) {
+			MPI_Isend(bins_send[j], bins_send_size[j], MPI_INT, j, p*j+rank, MPI_COMM_WORLD, request+j);	
+		}
+		if (j > rank) {
+			MPI_Isend(bins_send[j], bins_send_size[j], MPI_INT, j, p*j+rank, MPI_COMM_WORLD, request+j-1);	
 		}
 	}
 	for (j = 0; j < p; j++) 
@@ -111,10 +115,14 @@ int main( int argc, char *argv[])
 	for (i = 0; i < bins_recv_size[rank]; i++)		
 		bins_recv[rank][i] = bins_send[rank][i];
 	for (j = 0; j < p; j++) {
-		if (j != rank) {
-			MPI_Recv(bins_recv[j], bins_recv_size[j], MPI_INT, j, p*rank+j, MPI_COMM_WORLD, &(status[j]));
+		if (j < rank) {
+			MPI_Irecv(bins_recv[j], bins_recv_size[j], MPI_INT, j, p*rank+j, MPI_COMM_WORLD, request+p-1+j);	
+		}
+		if (j > rank) {
+			MPI_Irecv(bins_recv[j], bins_recv_size[j], MPI_INT, j, p*rank+j, MPI_COMM_WORLD, request+p-2+j);	
 		}
 	}
+	MPI_Waitall(2*(p-1), request, status);
 	int new_vec_len = 0, tmp = 0;
 	for (j = 0; j < p; j++)
 		new_vec_len += bins_recv_size[j];
