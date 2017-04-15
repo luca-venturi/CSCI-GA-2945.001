@@ -6,7 +6,7 @@ the comments to the solved mpi_bug_.c are reported at the beginning of the respe
 
 ### MPI Jacobi for 2D diffusion equation (blocking)
 
-jacobi-mpi2D takes as input the number of discretization point per dimension (N) and and the maximum number of iterations (it_max):
+./jacobi-mpi2D takes as input the number of discretization point per dimension (N) and and the maximum number of iterations (it_max):
 
 > mpirun -np 4 ./jacobi-mpi2D 1000 1000
 
@@ -43,7 +43,7 @@ jacobi-mpi2D takes as input the number of discretization point per dimension (N)
 
 ### ssort
 
-jacobi-mpi2D takes as input lenght of the initial vector (N):
+./ssort takes as input lenght of the initial vector (N):
 
 > mpirun -np 4 ./ssort 1000
 
