@@ -7,5 +7,8 @@ all: ${EXECS}
 multigrid: multigrid.c
 	${CC} ${FLAGS} $^ -o multigrid
 
+multigrid-mpi: multigrid-mpi.c
+	mpicc ${FLAGS} $^ -o multigrid-mpi
+
 clean:
 	rm -f ${EXECS}

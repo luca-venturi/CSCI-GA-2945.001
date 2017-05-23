@@ -10,7 +10,7 @@
 #include "util.h"
 #include <string.h>
 
-/* compute norm of residual */
+/* compuate norm of residual */
 double compute_norm(double *u, int N)
 {
   int i;
