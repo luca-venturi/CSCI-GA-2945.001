@@ -6,6 +6,10 @@ the comments to the solved mpi_bug_.c are reported at the beginning of the respe
 
 ### MPI Jacobi for 2D diffusion equation (blocking)
 
+./jacobi-mpi2D takes as input the number of discretization point per dimension (N) and and the maximum number of iterations (it_max):
+
+> mpirun -np 4 ./jacobi-mpi2D 1000 1000
+
 #### Stampede timings
 
 * Jacobi Weak Scaling (Nl = constant, it_max = 1000)
@@ -39,6 +43,10 @@ the comments to the solved mpi_bug_.c are reported at the beginning of the respe
 
 ### ssort
 
+./ssort takes as input the lenght of the initial vector (N):
+
+> mpirun -np 4 ./ssort 1000
+
 #### Stampede timings
 
 | N	 | nodes | tasks | time |
@@ -46,6 +54,5 @@ the comments to the solved mpi_bug_.c are reported at the beginning of the respe
 | 100 | 4 | 64 | 0.024011 |
 | 1000 | 4 | 64 | 0.030529 |
 | 10000 | 4 | 64 | 0.031794 |
-| 32000 | 4 | 64 | 0.043472 |
-| 64000 | 4 | 64 | 0.055785 |
+| 100000 | 4 | 64 | 0.055419 |
 
