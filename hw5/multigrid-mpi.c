@@ -45,9 +45,10 @@ void output_to_screen (double *lu, int lN, int rank, int size) {
 		}
 		MPI_Barrier(MPI_COMM_WORLD);
 	}
-	if (size - 1 == rank)
+	if (size - 1 == rank) {
 		printf("%f ", lu[lN+1]);
-	printf("\n");
+		printf("\n");
+	}
 }
 
 /* coarsen uf from length lN+3 to lenght lN/2+3 assuming N = 2^l */
@@ -119,6 +120,11 @@ void compute_residual(double *lu, double *lrhs, double *lres, int lN, double inv
       MPI_Irecv(&lres[0], 1, MPI_DOUBLE, rank-1, 124, MPI_COMM_WORLD, request+3);
     }
 	MPI_Barrier(MPI_COMM_WORLD);
+	/* set boundary values to 0 */
+	if (rank == 0)		
+		lres[0] = lres[1] = 0.0;
+	else if (rank == size-1)		
+		lres[lN+1] = lres[lN+2] = 0.0;
 }
 
 /* compute residual and coarsen */
@@ -195,9 +201,11 @@ int main(int argc, char * argv[])
 
 	/* compute number of multigrid levels */
 	levels = floor(log2(lNfine));
-	printf("Multigrid Solve using V-cycles for -u'' = f on (0,1)\n");
-	printf("Number of intervals = %d, max_iters = %d\n", lNfine, max_iters);
-	printf("Number of MG levels: %d \n", levels);
+	if (rank == 0) {
+		printf("Multigrid Solve using V-cycles for -u'' = f on (0,1)\n");
+		printf("Number of intervals = %d, max_iters = %d\n", lNfine, max_iters);
+		printf("Number of MG levels: %d \n", levels);
+	}
 
 	/* timing */
 	MPI_Barrier(MPI_COMM_WORLD);
@@ -215,15 +223,15 @@ int main(int argc, char * argv[])
 		lN[l] = lNfine / (int) pow(2,l);
 		double h = 1.0 / (size * lN[l]);
 		hsq[l] = h * h;
-		printf("MG level %2d, N = %8d\n", l, lN[l]);
+		if (rank ==0)
+			printf("MG level %2d, N = %8d\n", l, lN[l]);
 		invhsq[l] = 1.0 / hsq[l];
 		lu[l] = (double *) calloc(sizeof(double), lN[l]+3);
 		lrhs[l] = (double *) calloc(sizeof(double), lN[l]+3);
 	}
 	/* rhs on finest mesh */
-	for (i = 0; i <= lN[0]; ++i) {
+	for (i = 0; i <= lN[0]+2; ++i)
 		lrhs[0][i] = 1.0;
-	}
 	/* set boundary values (unnecessary if calloc is used) */
 	if (rank == 0)
 		lu[0][0] = lu[0][1] = 0.0;
@@ -234,7 +242,8 @@ int main(int argc, char * argv[])
 	/* initial residual norm */
 	compute_residual(lu[0], lrhs[0], lres, lN[0], invhsq[0], rank, size);
 	res_norm = res0_norm = compute_norm(lres, lN[0]);
-	printf("Initial Residual: %f\n", res0_norm); 
+	if (rank == 0)
+		printf("Initial Residual: %f\n", res0_norm); /**/
 
 	for (iter = 0; iter < max_iters && res_norm/res0_norm > tol; iter++) {
 		/* V-cycle: Coarsening */

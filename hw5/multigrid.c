@@ -179,11 +179,11 @@ int main(int argc, char * argv[])
   /* Clean up */
   free (hsq);
   free (invhsq);
-  free (N);
-  free(res);
+  free (lN);
+  free(lres);
   for (l = levels-1; l >= 0; --l) {
-    free(u[l]);
-    free(rhs[l]);
+    free(lu[l]);
+    free(lrhs[l]);
   }
 
   /* timing */
