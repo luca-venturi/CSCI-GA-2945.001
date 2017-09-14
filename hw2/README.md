@@ -1,4 +1,4 @@
-# hpc17_cims_nyu - HW 2
+# HW 2
 
 # comments to solved bugs
 
